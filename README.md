@@ -1,6 +1,3 @@
-# AREAL Landing PX4 Communication ROS 2 Package
+# Mocap to PX4
 
-Documentation Page: https://areal-gt.github.io/documentation/_build/ROS%202%20Packages/areal_ROS2_pkg.html
-
-
-
+This project aims to provide a bridge between motion capture systems and the PX4 flight control software. 
