@@ -5,7 +5,7 @@ import rclpy
 from rclpy.node import Node
 
 from px4_msgs.msg import VehicleOdometry
-from mocap_msgs.msg import Position
+from geometry_msgs.msg import PoseStamped
 
 from numpy import NaN
 
@@ -30,7 +30,7 @@ class MoCapPubSub(Node):
             return
 
         # Initialize subscriber to UAV topic
-        self.uav_subscription = self.create_subscription(Position, 
+        self.uav_subscription = self.create_subscription(PoseStamped, 
             uav_topic, self.mocap_callback, 10)
 
         # Initialize publisher to PX4 vehicle_visual_odometry topic
@@ -38,7 +38,8 @@ class MoCapPubSub(Node):
             px4_visual_odometry_topic, 10)
 
         # Initialize subscriber count
-        self.prev_subscription_count = 0
+        self.prev_subscription_count = self.px4_publisher.get_subscription_count()
+        self.log_subscription_state()
 
         # Create a timer to check for subscription changes
         self.subscription_check_timer = self.create_timer(1.0, self.check_subscriptions)
@@ -53,8 +54,8 @@ class MoCapPubSub(Node):
         # VICON Front, Left, Up to PX4 Front, Right, Down
         # Position/orientation components
         msg_px4.pose_frame = 2  # FRD from px4 message
-        msg_px4.position = [msg.x_trans / 1000.0, -msg.y_trans / 1000.0, -msg.z_trans / 1000.0]
-        msg_px4.q = [msg.w, msg.x_rot, -msg.y_rot, -msg.z_rot]
+        msg_px4.position = [msg.pose.position.x / 1000.0, -msg.pose.position.y / 1000.0, -msg.pose.position.z / 1000.0]
+        msg_px4.q = [msg.pose.orientation.w, msg.pose.orientation.x, -msg.pose.orientation.y, -msg.pose.orientation.z]
         
         # Velocity components (unknown)
         msg_px4.velocity_frame = 2  # FRD from px4 message
@@ -67,6 +68,13 @@ class MoCapPubSub(Node):
         msg_px4.velocity_variance = [0.0, 0.0, 0.0]
 
         self.px4_publisher.publish(msg_px4)  # Publish to PX4
+
+    # Log the initial subscription state
+    def log_subscription_state(self):
+        if self.prev_subscription_count > 0:
+            self.get_logger().info("/fmu/in/vehicle_visual_odometry is initially subscribed by a PX4 vehicle.")
+        else:
+            self.get_logger().warn("No subscribers initially on /fmu/in/vehicle_visual_odometry topic. Please check PX4 connection on ROS2 network.")
 
     # Check for subscription changes
     def check_subscriptions(self):
