@@ -54,7 +54,7 @@ class MoCapPubSub(Node):
         # VICON Front, Left, Up to PX4 Front, Right, Down
         # Position/orientation components
         msg_px4.pose_frame = 2  # FRD from px4 message
-        msg_px4.position = [msg.pose.position.x / 1000.0, -msg.pose.position.y / 1000.0, -msg.pose.position.z / 1000.0]
+        msg_px4.position = [msg.pose.position.x, -msg.pose.position.y, -msg.pose.position.z]
         msg_px4.q = [msg.pose.orientation.w, msg.pose.orientation.x, -msg.pose.orientation.y, -msg.pose.orientation.z]
         
         # Velocity components (unknown)
