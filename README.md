@@ -10,7 +10,7 @@ The provided launch file performs the following operations:
 2. Remaps and publishes the data to a PX4-compatible topic using the `mocap_to_px4` package.
 
 ## Dependencies
-
+- Vicon DataStream SDK
 - [mocap_vicon_client](https://github.com/atarbabgei/mocap_vicon_client)
 - [px4_msgs](https://github.com/atarbabgei/px4_msgs) (a fork known to be compatible at the time of development)
 
