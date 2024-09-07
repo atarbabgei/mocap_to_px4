@@ -11,11 +11,33 @@ The provided launch file performs the following operations:
 
 ## Dependencies
 
-- [mocap_vicon_client](https://github.com/atarbabgei/keyboard_joy)
+- [mocap_vicon_client](https://github.com/atarbabgei/mocap_vicon_client)
 - [px4_msgs](https://github.com/atarbabgei/px4_msgs) (a fork known to be compatible at the time of development)
 
 ## Installation
 
+### Ensure ROS2 is Installed
+
+Make sure you have ROS2 installed on your system. This package is tested on Ubuntu 22.04 and ROS2 Humble. You can follow the installation guide [here](https://docs.ros.org/en/humble/Installation.html).
+
+
+### Install the Vicon DataStream SDK
+
+To install the Vicon DataStream SDK, run the following command:
+
+```bash
+wget -qO- https://github.com/atarbabgei/miscellaneous/raw/main/mocap_vicon/scripts/install_vicon_datastream_sdk.sh | sudo bash
+```
+
+### Install Dependencies
+
+Ensure that the necessary dependencies are installed. 
+
+```bash
+sudo apt update
+sudo apt install libboost-all-dev python3-colcon-common-extensions cmake
+```
+### Build and Source Workspace
 To set up the required packages, clone the repositories into your ROS2 workspace and build them:
 
 ```bash
@@ -30,7 +52,11 @@ git clone https://github.com/atarbabgei/mocap_to_px4.git
 # Build the workspace
 cd ~/your_workspace
 colcon build
+
+# Source the workspace
+source install/setup.bash
 ```
+
 
 ## Example Usage
 
