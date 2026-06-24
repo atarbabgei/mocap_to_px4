@@ -6,6 +6,7 @@ This launch file starts the computer-side ROS2 nodes for VICON data streaming.
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
@@ -27,13 +28,18 @@ def generate_launch_description():
     )
     declare_uav_topic_arg = DeclareLaunchArgument(
         'uav_topic',
-        default_value='/mocap/drone/drone',
+        default_value='/mocap/drone',
         description='UAV subscription topic'
     )
     declare_px4_visual_odometry_topic_arg = DeclareLaunchArgument(
         'px4_visual_odometry_topic',
         default_value='/fmu/in/vehicle_visual_odometry',
         description='PX4 visual odometry topic'
+    )
+    declare_launch_vicon_arg = DeclareLaunchArgument(
+        'launch_vicon',
+        default_value='true',
+        description='Whether to launch the VICON client node (set false to run only the mocap_to_px4 node)'
     )
 
     # Initialize launch description
@@ -42,7 +48,8 @@ def generate_launch_description():
         declare_buffer_size_arg,
         declare_topic_namespace_arg,
         declare_uav_topic_arg,
-        declare_px4_visual_odometry_topic_arg
+        declare_px4_visual_odometry_topic_arg,
+        declare_launch_vicon_arg
     ])
 
     # Parameters from launch configuration
@@ -51,12 +58,14 @@ def generate_launch_description():
     topic_namespace = LaunchConfiguration('topic_namespace')
     uav_topic = LaunchConfiguration('uav_topic')
     px4_visual_odometry_topic = LaunchConfiguration('px4_visual_odometry_topic')
+    launch_vicon = LaunchConfiguration('launch_vicon')
 
     # Node for VICON data streaming
     vicon_streaming_node = Node(
         package='mocap_vicon_client',
         executable='vicon_client',
         output='screen',
+        condition=IfCondition(launch_vicon),
         parameters=[
             {'server': server},
             {'buffer_size': buffer_size},
